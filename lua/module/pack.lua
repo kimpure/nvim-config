@@ -162,10 +162,40 @@ function pack.update(names)
 		else
 			vim.api.nvim_echo({
 				{ "Failed to update " .. name },
-				{ "package not found" },
+				{ " | package not found" },
 			}, true, {})
 		end
 	end
 end
+
+vim.api.nvim_create_user_command("Pack", function(opts)
+    local fargs = opts.fargs
+    local command = fargs[1]
+    local target = utils.select_table(2, fargs)
+
+    if command == "Update" then
+        pack.update(target)
+    elseif command == "Del" then
+        pack.del(target)
+    elseif command == "Add" then
+        pack.add({ src = target })
+    else
+        vim.notify("Unknown argument: " .. command, vim.log.levels.WARN)
+    end
+end, {
+    nargs = "+",
+    ---@param line string
+    complete = function(_, line)
+        local args = vim.split(line, "%s+")
+
+        if #args == 2 then
+            return { "Update", "Add", "Del" }
+        elseif #args >= 3 and args[2] == "Update" or args[2] == "Del" then
+            return utils.hashmap(plugs)
+        end
+
+        return {}
+    end
+})
 
 return pack

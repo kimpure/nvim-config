@@ -9,6 +9,31 @@ function utils.has(feat)
 	return fn.has(feat) == 1
 end
 
+--- @param object table<string, any>
+--- @return string[]
+function utils.hashmap(object)
+    local map = {}
+
+    for k, _ in pairs(object) do
+        table.insert(map, k)
+    end
+
+    return map
+end
+
+--- @param index number
+--- @param tab any[]
+--- @return any[]
+function utils.select_table(index, tab)
+    local res = {}
+
+    for i=0, #tab - index do
+        res[i + 1] = tab[index + i]
+    end
+
+    return res
+end
+
 local is_windows = utils.has("win32") or utils.has("win64")
 
 --- @class Utils.FileSystem
