@@ -27,12 +27,60 @@ pack.add({
 	{ src = "github.com/nvim-lua/plenary.nvim" },
 	{ src = "github.com/nvim-tree/nvim-tree.lua" },
 
-    { 
-        src = "github.com/hedyhli/outline.nvim",
-        boot = {
-            "outline",
-        }
-    },
+	{
+		src = "github.com/nanozuki/tabby.nvim",
+		boot = function()
+            vim.o.showtabline = 2
+            vim.opt.sessionoptions="curdir,folds,globals,help,tabpages,terminal,winsize"
+
+			local theme = {
+				fill = "TabLineFill",
+				head = "TabLine",
+				current_tab = { fg = "#F8FBF6", bg = "#896a98", style = "italic" },
+				tab = "TabLine",
+				win = "TabLine",
+				tail = "TabLine",
+			}
+
+			require("tabby.tabline").set(function(line)
+				return {
+					{
+						{
+							"",
+							hl = theme.head,
+						},
+						line.sep("", theme.head, theme.fill),
+					},
+					line.tabs().foreach(function(tab)
+						local hl = tab.is_current() and theme.current_tab or theme.tab
+						return {
+							line.sep("", hl, theme.fill),
+							tab.is_current() and "" or "",
+							tab.number(),
+							tab.name(),
+							line.sep("", hl, theme.fill),
+							hl = hl,
+							margin = " ",
+						}
+					end),
+					line.spacer(),
+					{
+						line.sep("", theme.tail, theme.fill),
+						{ "  ", hl = theme.tail },
+					},
+					hl = theme.fill,
+				}
+			end)
+		end,
+        disable = true,
+	},
+
+	{
+		src = "github.com/hedyhli/outline.nvim",
+		boot = {
+			"outline",
+		},
+	},
 
 	{
 		src = "github.com/kimpure/cmdhistory.nvim",

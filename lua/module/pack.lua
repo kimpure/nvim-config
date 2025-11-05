@@ -17,7 +17,7 @@ local function get_package(src, name, version)
 	name = name or match(src, "^.+/(.+)$")
 	local path = opt_path .. name
 
-    if vim.fn.isdirectory(path) < 1 then
+	if vim.fn.isdirectory(path) < 1 then
 		local cmd = { "git", "clone", "--depth=1" }
 
 		if version then
@@ -60,6 +60,7 @@ local not_load_plugins = {}
 --- @field src string
 --- @field version? string
 --- @field boot? fun() | { [1]: string, [string]: any }
+--- @field disable? boolean
 --- @field event string? Load plugin event
 
 --- Add packages
@@ -67,41 +68,44 @@ local not_load_plugins = {}
 function pack.add(specs)
 	for i = 1, #specs do
 		local spec = specs[i]
-		local name = match(spec.src, "^.+/(.+)$")
-        local boot = spec.boot
-		local event = spec.event
 
-		plugs[name] = get_package(spec.src, name, spec.version)
+		if not spec.disable then
+			local name = match(spec.src, "^.+/(.+)$")
+			local boot = spec.boot
+			local event = spec.event
 
-		if event then
-			not_load_plugins[name] = vim.api.nvim_create_autocmd(event, {
-				once = true,
-				callback = function()
-					vim.cmd("packadd " .. name)
+			plugs[name] = get_package(spec.src, name, spec.version)
 
-					if boot then
-						if type(boot) == "table" then
-							local boot_name = boot[1]
-							boot[1] = nil
-							require(boot_name).setup(boot)
-						else
-							boot()
+			if event then
+				not_load_plugins[name] = vim.api.nvim_create_autocmd(event, {
+					once = true,
+					callback = function()
+						vim.cmd("packadd " .. name)
+
+						if boot then
+							if type(boot) == "table" then
+								local boot_name = boot[1]
+								boot[1] = nil
+								require(boot_name).setup(boot)
+							else
+								boot()
+							end
 						end
+
+						vim.api.nvim_del_autocmd(not_load_plugins[name])
+					end,
+				})
+			else
+				vim.cmd("packadd " .. name)
+
+				if boot then
+					if type(boot) == "table" then
+						local boot_name = boot[1]
+						boot[1] = nil
+						require(boot_name).setup(boot)
+					else
+						boot()
 					end
-
-					vim.api.nvim_del_autocmd(not_load_plugins[name])
-				end,
-			})
-		else
-			vim.cmd("packadd " .. name)
-
-			if boot then
-				if type(boot) == "table" then
-					local boot_name = boot[1]
-					boot[1] = nil
-					require(boot_name).setup(boot)
-				else
-					boot()
 				end
 			end
 		end
@@ -169,33 +173,33 @@ function pack.update(names)
 end
 
 vim.api.nvim_create_user_command("Pack", function(opts)
-    local fargs = opts.fargs
-    local command = fargs[1]
-    local target = utils.select_table(2, fargs)
+	local fargs = opts.fargs
+	local command = fargs[1]
+	local target = utils.select_table(2, fargs)
 
-    if command == "Update" then
-        pack.update(target)
-    elseif command == "Del" then
-        pack.del(target)
-    elseif command == "Add" then
-        pack.add({ src = target })
-    else
-        vim.notify("Unknown argument: " .. command, vim.log.levels.WARN)
-    end
+	if command == "Update" then
+		pack.update(target)
+	elseif command == "Del" then
+		pack.del(target)
+	elseif command == "Add" then
+		pack.add({ src = target })
+	else
+		vim.notify("Unknown argument: " .. command, vim.log.levels.WARN)
+	end
 end, {
-    nargs = "+",
-    ---@param line string
-    complete = function(_, line)
-        local args = vim.split(line, "%s+")
+	nargs = "+",
+	---@param line string
+	complete = function(_, line)
+		local args = vim.split(line, "%s+")
 
-        if #args == 2 then
-            return { "Update", "Add", "Del" }
-        elseif #args >= 3 and args[2] == "Update" or args[2] == "Del" then
-            return utils.hashmap(plugs)
-        end
+		if #args == 2 then
+			return { "Update", "Add", "Del" }
+		elseif #args >= 3 and args[2] == "Update" or args[2] == "Del" then
+			return utils.hashmap(plugs)
+		end
 
-        return {}
-    end
+		return {}
+	end,
 })
 
 return pack
