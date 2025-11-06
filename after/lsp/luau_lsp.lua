@@ -1,42 +1,20 @@
-local settings = {}
-
-local function rojo_project()
-	return vim.fs.root(0, function(name)
-		return name:match(".+%.project%.json$")
-	end)
-end
-
-if rojo_project() then
-	vim.filetype.add({
-		extension = {
-			lua = function(path)
-				return path:match("%.nvim%.lua$") and "lua" or "luau"
-			end,
-		},
-	})
-
-	settings = {
-		platform = {
-			type = rojo_project() and "roblox" or "standard",
-		},
-		sourcemap = {
-			enabled = true,
-			autogenerate = true,
-			rojo_project_file = "default.project.json",
-			sourcemap_file = "sourcemap.json",
-		},
-		types = {
-			roblox_security_level = "PluginSecurity",
-		},
-	}
-else
-	settings = {
-		platform = "standard",
-	}
-end
-
 return {
 	cmd = { "luau-lsp" },
 	filetypes = { "luau" },
-	settings = { ["luau-lsp"] = settings },
+	settings = {
+		["luau-lsp"] = {
+			platform = {
+				type = "roblox",
+			},
+			types = {
+				roblox_security_level = "PluginSecurity",
+			},
+		},
+		sourcemap = {
+			enabled = true,
+			autogenerate = true, -- automatic generation when the server is initialized
+			rojo_project_file = "default.project.json",
+			sourcemap_file = "sourcemap.json",
+		},
+	},
 }
