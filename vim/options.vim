@@ -36,8 +36,8 @@ set background=dark
 set fillchars=eob:\ ,fold:\ ,foldopen:,foldsep:\ ,foldclose:
 
 set foldcolumn=0
-set foldlevel=1
-set foldlevelstart=1
+set foldlevel=99
+set foldlevelstart=99
 set foldenable
 
 if has("win32") || has("win64")
