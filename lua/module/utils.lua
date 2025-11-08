@@ -68,9 +68,11 @@ end
 --- @class Utils.FileSystem
 utils.fs = fs
 
+--- @class Utils.Lua
 local lua = {}
 
 --- @param tab table<any, any> target table
+--- @return number
 function lua.mixedtable_len(tab)
     local len = 0
 
@@ -81,6 +83,7 @@ function lua.mixedtable_len(tab)
     return len
 end
 
+--- @class Utils.Lua
 utils.lua = lua
 
 return utils
