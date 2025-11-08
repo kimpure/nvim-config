@@ -83,93 +83,62 @@ function pack.add(specs)
 
 			plugs[name] = get_package(spec.src, name, spec.version)
 
+            local function boot_plugin()
+                --- @diagnostic disable-next-line
+                local success, message = pcall(vim.cmd, "packadd " .. name)
+
+                if success then
+                    if boot then
+                        if type(boot) == "table" then
+                            local boot_name = boot[1]
+                            boot[1] = nil
+
+                            if utils.lua.mixedtable_len(boot) == 0 then
+                                boot = nil
+                            end
+
+                            local boot_success, boot_message = pcall(function(n, o)
+                                require(n).setup(o)
+                            end, boot_name, boot)
+
+                            if not boot_success then
+                                --- @diagnostic disable-next-line
+                                vim.notify(boot_message, vim.log.levels.ERROR)
+                            end
+                        else
+                            local boot_success, boot_message = pcall(boot)
+
+                            if not boot_success then
+                                vim.notify(boot_message, vim.log.levels.ERROR)
+                            end
+                        end
+
+                        if keymaps then
+                            for map, parm in pairs(keymaps) do
+                                vim.keymap.set(
+                                    parm.mode or "n",
+                                    map,
+                                    parm.cmd,
+                                    parm.opts or { noremap = true, silent = true }
+                                )
+                            end
+                        end
+                    end
+                else
+                    vim.notify(message, vim.log.levels.ERROR)
+                end
+            end
+
 			if event then
 				not_load_plugins[name] = vim.api.nvim_create_autocmd(event, {
 					once = true,
 					callback = function()
-						--- @diagnostic disable-next-line
-						local success, message = pcall(vim.cmd, "packadd " .. name)
-
-						if success then
-							if boot then
-								if type(boot) == "table" then
-									local boot_name = boot[1]
-									boot[1] = nil
-
-									local boot_success, boot_message = pcall(function(n, o)
-										require(n).setup(o)
-									end, boot_name, boot)
-
-									if not boot_success then
-										--- @diagnostic disable-next-line
-										vim.notify(boot_message, vim.log.levels.ERROR)
-									end
-								else
-									local boot_success, boot_message = pcall(boot)
-
-									if not boot_success then
-										vim.notify(boot_message, vim.log.levels.ERROR)
-									end
-								end
-
-								if keymaps then
-									for map, parm in pairs(keymaps) do
-										vim.keymap.set(
-											parm.mode or "n",
-											map,
-											parm.cmd,
-											parm.opts or { noremap = true, silent = true }
-										)
-									end
-								end
-							end
-						else
-							vim.notify(message, vim.log.levels.ERROR)
-						end
-
+                        boot_plugin()
 						vim.api.nvim_del_autocmd(not_load_plugins[name])
 					end,
 				})
 			else
-				--- @diagnostic disable-next-line
-				local success, message = pcall(vim.cmd, "packadd " .. name)
-
-				if success then
-					if boot then
-						if type(boot) == "table" then
-							local boot_name = boot[1]
-							boot[1] = nil
-
-							local boot_success, boot_message = pcall(function(n, o)
-								require(n).setup(o)
-							end, boot_name, boot)
-
-							if not boot_success then
-								--- @diagnostic disable-next-line
-								vim.notify(boot_message, vim.log.levels.ERROR)
-							end
-						else
-							local boot_success, boot_message = pcall(boot)
-
-							if not boot_success then
-								vim.notify(boot_message, vim.log.levels.ERROR)
-							end
-						end
-
-						if keymaps then
-							for map, parm in pairs(keymaps) do
-								vim.keymap.set(
-									parm.mode or "n",
-									map,
-									parm.cmd,
-									parm.opts or { noremap = true, silent = true }
-								)
-							end
-						end
-					end
-				else
-					vim.notify(message, vim.log.levels.ERROR)
-				end
+                boot_plugin()
 			end
 		end
 	end

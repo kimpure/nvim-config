@@ -68,4 +68,19 @@ end
 --- @class Utils.FileSystem
 utils.fs = fs
 
+local lua = {}
+
+--- @param tab table<any, any> target table
+function lua.mixedtable_len(tab)
+    local len = 0
+
+    for _, _ in pairs(tab) do
+        len = len + 1
+    end
+
+    return len
+end
+
+utils.lua = lua
+
 return utils

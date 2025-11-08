@@ -665,6 +665,34 @@ pack.add({
 		event = "InsertEnter",
 		boot = { "nvim-autopairs" },
 	},
+    {
+        src = "github.com/kimpure/warp.nvim",
+        boot = {
+            "warp",
+        },
+        keymaps = {
+            ["'"] = {
+                mode = "v",
+                cmd = "<CMD>WarpVisual '<CR>",
+            },
+            ["\""] = {
+                mode = "v",
+                cmd = "<CMD>WarpVisual \"<CR>",
+            },
+            ["("] = {
+                mode = "v",
+                cmd = "<CMD>WarpVisual ( )<CR>",
+            },
+            ["{"] = {
+                mode = "v",
+                cmd = "<CMD>WarpVisual { }<CR>",
+            },
+            ["["] = {
+                mode = "v",
+                cmd = "<CMD>WarpVisual [ ]<CR>",
+            },
+        },
+    },
 
 	{ src = "github.com/samjwill/nvim-unception" },
 
