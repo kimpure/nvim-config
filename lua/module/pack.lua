@@ -207,7 +207,7 @@ end
 vim.api.nvim_create_user_command("Pack", function(opts)
 	local fargs = opts.fargs
 	local command = fargs[1]
-	local target = utils.select_table(2, fargs)
+	local target = utils.lua.select_table(2, fargs)
 
 	if command == "update" then
 		pack.update(target)
@@ -228,7 +228,7 @@ end, {
 			return { "update", "add", "del", "open" }
 		elseif #args >= 3 then
 			if args[2] == "update" or args[2] == "del" then
-				return utils.hashmap(plugs)
+				return utils.lua.hashmap(plugs)
 			end
 		end
 
