@@ -10,6 +10,18 @@ function utils.has(feat)
 	return fn.has(feat) == 1
 end
 
+--- @param path string the target path
+--- @return boolean
+function utils.isdirectory(path)
+    return fn.isdirectory(path) < 1
+end
+
+--- @param feat string
+--- @return boolean
+function utils.exists(feat)
+    return fn.exists(feat) ~= 0
+end
+
 local is_windows = utils.has("win32") or utils.has("win64")
 
 --- @class Utils.FileSystem
@@ -61,7 +73,7 @@ end
 --- @param index number
 --- @param tab any[]
 --- @return any[]
-function lua.select_table(index, tab)
+function lua.table_select(index, tab)
 	local res = {}
 
 	for i = 0, #tab - index do
@@ -74,16 +86,89 @@ end
 --- @param tab table<any, any> target table
 --- @return number
 function lua.mixedtable_len(tab)
-    local len = 0
+	local len = 0
 
-    for _, _ in pairs(tab) do
-        len = len + 1
+	for _, _ in pairs(tab) do
+		len = len + 1
+	end
+
+	return len
+end
+
+--- @param array table<any, any>
+--- @return boolean
+function lua.is_array(array)
+	for k, _ in pairs(array) do
+		if type(k) ~= "number" then
+			return false
+		end
+	end
+
+	return true
+end
+
+
+--- inspect
+--- @param value any target value
+--- @return string
+function lua.tostring(value)
+	local format = string.format
+	local gsub = string.gsub
+	local rep = string.rep
+
+	if type(value) == "table" then
+		local result = ""
+		for k, v in pairs(value) do
+			result = result
+				.. format(
+					rep(" ", vim.o.tabstop) .. "[%s]: %s",
+					type(k) == "table" and (lua.is_array(k) and "array" or "table")
+						or (type(k) == "string" and format('"%s"', k) or tostring(k)),
+					gsub(lua.tostring(v), "\n([^\n]+)", "\n" .. rep(" ", vim.o.tabstop) .. "%1")
+				)
+				.. "\n"
+		end
+
+		return "{\n" .. result .. "}"
+	else
+		return tostring(value)
+	end
+end
+
+--- @param tab any[]
+--- @param value any
+--- @return number?
+function lua.table_find(tab, value)
+    for i=1, #tab do
+        if value == tab[i] then
+            return i
+        end
     end
-
-    return len
 end
 
 --- @class Utils.Lua
 utils.lua = lua
+
+--- @class Utils.Lsp
+local lsp = {}
+
+--- @return lsp.ClientCapabilities
+function lsp.create_capabilities()
+	local capabilities = vim.lsp.protocol.make_client_capabilities()
+	capabilities.textDocument.foldingRange = {
+		dynamicRegistration = false,
+		lineFoldingOnly = true,
+	}
+	capabilities.workspace = {
+		didChangeWatchedFiles = {
+			dynamicRegistration = true,
+		},
+	}
+
+	return capabilities
+end
+
+--- @class Utils.Lsp
+utils.lsp = lsp
 
 return utils

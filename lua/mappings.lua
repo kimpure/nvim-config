@@ -17,6 +17,9 @@ keymap.set("n", "<A-k>", ":wincmd k<CR>", { noremap = true, silent = true, })
 keymap.set("n", "<C-Right>", "w", { noremap = true, silent = true })
 keymap.set("n", "<C-Left>", "b", { noremap = true, silent = true })
 
+keymap.set("n", "<S-Up>", "<C-u>", { noremap = true, silent = true })
+keymap.set("n", "<S-Down>", "<C-d>", { noremap = true, silent = true })
+
 keymap.set("v", "<", "<gv", { noremap = true, silent = true, })
 keymap.set("v", ">", ">gv", { noremap = true, silent = true, })
 
