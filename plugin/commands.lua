@@ -41,13 +41,14 @@ create_user_command("Reload", function()
 		vim.cmd("LspStop")
 	end
 
+    --- @type boolean
 	--- @diagnostic disable-next-line
 	local is_modifiable = vim.opt.modifiable:get()
 	if not is_modifiable then
 		vim.opt.modifiable = true
 	end
 
-	pack.reload(pack.list())
+	pcall(pack.reload, pack.list())
 	utils.runtime.reload(fn.stdpath("config"))
 
 	local myvimrc = fn.expand("$MYVIMRC")

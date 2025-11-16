@@ -245,8 +245,6 @@ function runtime.reload(directory)
     for i=1, #plugs do
         vim.cmd("source " .. source_files[i])
     end
-
-	vim.cmd("doautocmd VimEnter")
 end
 
 --- @class Utils.Runtime
