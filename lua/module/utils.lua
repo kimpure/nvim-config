@@ -215,31 +215,38 @@ function runtime.reload(directory)
     --- @type string[]
     local plugs = {}
 
+    --- @type string[]
+    local source_files = {}
+
 	for i = 1, #files do
 		local module_path = files[i]:sub(#directory + 2)
 
 		local lua_root = module_path:match("^lua/") or module_path:match("^lua\\")
+        local meta = module_path:match("_meta")
 
-		if lua_root then
+        if lua_root and not meta then
             module_path = module_path:sub(5)
 
-			local filename = module_path:match("([^/\\]+)$")
-			local mod
+            local filename = module_path:match("([^/\\]+)$")
+            local mod
 
-			if filename == "init.lua" then
-				mod = module_path:sub(1, -10):gsub("/", "."):gsub("\\", ".")
-			else
-				mod = module_path:sub(1, -5):gsub("/", "."):gsub("\\", ".")
-			end
+            if filename == "init.lua" then
+                mod = module_path:sub(1, -10):gsub("/", "."):gsub("\\", ".")
+            else
+                mod = module_path:sub(1, -5):gsub("/", "."):gsub("\\", ".")
+            end
 
-			package.loaded[mod] = nil
-		    table.insert(plugs, filename)
+            package.loaded[mod] = nil
+            table.insert(plugs, filename)
+            table.insert(source_files, files[i])
         end
 	end
 
     for i=1, #plugs do
-        vim.cmd("source " .. files[i])
+        vim.cmd("source " .. source_files[i])
     end
+
+	vim.cmd("doautocmd VimEnter")
 end
 
 --- @class Utils.Runtime

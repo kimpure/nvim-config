@@ -69,9 +69,9 @@ local event_autocmds = {}
 --- @field opts? any
 
 --- @class Pack.AddSpec
---- @field src? string -- plugin src (url (ex. github.com/kimpure/warp.nvim or https://github.com/kimpure/warp.nvim))
---- @field dir? string -- plugin dir (local)
---- @field version? string -- plugin version (branch)
+--- @field src? string -- Plugin src (url (ex. github.com/kimpure/warp.nvim or https://github.com/kimpure/warp.nvim))
+--- @field dir? string -- Plugin dir (local)
+--- @field version? string -- Plugin version (branch)
 --- @field import? fun() -- Executed when import is done
 --- @field boot? fun() | { [1]: string, [string]: any } -- Executed when boot is done
 --- @field keymaps? table<string, Pack.AddSpec.Keymap>
