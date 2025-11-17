@@ -36,31 +36,3 @@ end, {
 	end,
 })
 
-create_user_command("Reload", function()
-	if utils.exists(":LspStop") then
-		vim.cmd("LspStop")
-	end
-
-    --- @type boolean
-	--- @diagnostic disable-next-line
-	local is_modifiable = vim.opt.modifiable:get()
-	if not is_modifiable then
-		vim.opt.modifiable = true
-	end
-
-	pcall(pack.reload, pack.list())
-	utils.runtime.reload(fn.stdpath("config"))
-
-	local myvimrc = fn.expand("$MYVIMRC")
-	if myvimrc:match("%.lua$") then
-		api.nvim_cmd({ cmd = "luafile", args = { myvimrc } }, {})
-	else
-		api.nvim_cmd({ cmd = "source", args = { myvimrc } }, {})
-	end
-
-	vim.cmd("doautocmd VimEnter")
-
-	if utils.exists(":LspRestart") then
-		vim.cmd("LspRestart")
-	end
-end, {})

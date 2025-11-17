@@ -12,13 +12,16 @@ local match = string.match
 
 local insert = table.insert
 
---- @param src string package url
---- @param name string? package name
---- @param version string? package version
---- @return Pack.Spec
-local function clone_package(src, name, version)
+--- @param spec Pack.Spec
+--- @return Pack.Spec.Src
+local function clone_package(spec)
+	local src = spec.src
+	local name = spec.name
+	local version = spec.version
+
 	src = sub(src, 6) == "https:" and src or "https://" .. src
 	name = name or match(src, "^.+/(.+)$")
+
 	local path = opt_path .. name
 
 	if not utils.isdirectory(path) then
@@ -41,45 +44,61 @@ local function clone_package(src, name, version)
 		end
 	end
 
-	return {
+	return vim.tbl_extend("force", spec, {
 		src = src,
-		dir = opt_path .. name,
 		name = name,
-		version = version,
-        path = path,
-	}
+		path = path,
+	})
 end
 
---- @class Pack.Spec
---- @field src? string URI from which to install and pull updates
---- @field dir string Package Directory
---- @field name string Name of plugin
---- @field version string? Use for install and updates
---- @field path string Path on disk
+--- @alias Pack.Plugin Pack.Spec.Src | Pack.Plugin.Dir
 
---- @type table<string, Pack.Spec>
-local plugs = {}
+--- @class Pack.Plugin.Src: Pack.Spec.Src
+--- @field path string
+--- @field name string
 
---- @type table<string, integer>[]
-local event_autocmds = {}
+--- @class Pack.Plugin.Dir: Pack.Spec.Dir
+--- @field path string
+--- @field name string
 
---- @class Pack.AddSpec.Keymap
+--- @alias Pack.Spec Pack.Spec.Src | Pack.Spec.Dir
+
+--- @class Pack.Spec.Base
+--- @field name? string
+--- @field version? string -- Plugin version (branch)
+--- @field import? fun() -- Executed when import is done
+--- @field boot? Pack.Spec.Boot -- Executed when boot is done
+--- @field keymaps? table<string, Pack.Spec.Keymap>
+--- @field disable? boolean -- Plugin disable
+--- @field events string[]? -- Load plugin events
+
+--- @class Pack.Spec.Src: Pack.Spec.Base
+--- @field src string -- Plugin src (url (ex. github.com/kimpure/warp.nvim or https://github.com/kimpure/warp.nvim))
+
+--- @class Pack.Spec.Dir: Pack.Spec.Base
+--- @field dir string -- Plugin dir (local)
+
+--- @alias Pack.Spec.Boot Pack.Spec.Boot.Config | Pack.Spec.Boot.CallBack
+
+--- @class Pack.Spec.Boot.Config
+--- @field [1] string -- Plugin name
+--- @field [string] any -- Plugin options
+
+--- @alias Pack.Spec.Boot.CallBack fun()
+
+--- @class Pack.Spec.Keymap
 --- @field mode? string | string[]
 --- @field cmd fun() | string
 --- @field opts? any
 
---- @class Pack.AddSpec
---- @field src? string -- Plugin src (url (ex. github.com/kimpure/warp.nvim or https://github.com/kimpure/warp.nvim))
---- @field dir? string -- Plugin dir (local)
---- @field version? string -- Plugin version (branch)
---- @field import? fun() -- Executed when import is done
---- @field boot? fun() | { [1]: string, [string]: any } -- Executed when boot is done
---- @field keymaps? table<string, Pack.AddSpec.Keymap>
---- @field disable? boolean -- Plugin disable
---- @field events string[]? Load plugin event
+--- @type table<string, Pack.Plugin>
+local plugins = {}
 
---- Add packages
---- @param specs Pack.AddSpec[]
+--- @type table<string, integer>[]
+local event_autocmds = {}
+
+--- Add plugins
+--- @param specs Pack.Spec[]
 function pack.add(specs)
 	for i = 1, #specs do
 		local spec = specs[i]
@@ -111,25 +130,25 @@ function pack.add(specs)
 			if boot then
 				if type(boot) == "table" then
 					local module_name = boot[1]
+
 					boot[1] = nil
 
-					if utils.lua.mixedtable_len(boot) == 0 then
-						boot = nil
-					end
-
-					local boot_success, boot_message = pcall(function(module, opt)
+					local success, message = pcall(function(module, opt)
 						require(module).setup(opt)
 					end, module_name, boot)
 
-					if not boot_success then
-						--- @diagnostic disable-next-line
-						vim.notify(boot_message, vim.log.levels.ERROR)
+					if not success then
+                        --- @diagnostic disable-next-line
+						vim.notify(message, vim.log.levels.ERROR)
 					end
-				else
-					local boot_success, boot_message = pcall(boot)
 
-					if not boot_success then
-						vim.notify(boot_message, vim.log.levels.ERROR)
+					boot[1] = module_name
+				else
+					--- @diagnostic disable-next-line
+					local success, message = pcall(boot)
+
+					if not success then
+						vim.notify(message, vim.log.levels.ERROR)
 					end
 				end
 
@@ -165,12 +184,10 @@ function pack.add(specs)
 				if not spec.disable then
 					utils.runtime.append(dir)
 
-					plugs[name] = {
-						dir = dir,
-						name = name,
-						version = spec.version,
-                        path = spec.dir,
-					}
+					plugins[name] = vim.tbl_extend("force", spec, {
+                        path = dir,
+                        name = name,
+                    })
 
 					load_plugin()
 				end
@@ -180,9 +197,9 @@ function pack.add(specs)
 		elseif spec.src then
 			if not spec.disable then
 				if import_plugin() then
-					plugs[name] = clone_package(spec.src, name, spec.version)
+					plugins[name] = clone_package(spec)
 
-					load_plugin()
+                    load_plugin()
 				else
 					vim.notify("Faild import plugin: " .. name, vim.log.levels.WARN)
 				end
@@ -193,18 +210,17 @@ function pack.add(specs)
 	end
 end
 
---- Delete packages
+--- Delete plugins
 --- @param names string[] target package names
 function pack.del(names)
-    local plugins = pack.get(names)
-
 	for i = 1, #names do
 		local name = names[i]
 
-		plugs[name] = nil
-        utils.runtime.unload(plugins[i].path)
+		utils.packages.unload(plugins[name].path)
 
-        if event_autocmds[name] then
+		plugins[name] = nil
+
+		if event_autocmds[name] then
 			local events = event_autocmds[name]
 
 			for j = 1, #events do
@@ -215,51 +231,50 @@ function pack.del(names)
 	end
 end
 
---- Get plugin spec
+--- Get plugins spec
 --- @param names string[] target package names
---- @return Pack.Spec[]
+--- @return Pack.Plugin[]
 function pack.get(names)
 	local result = {}
 
 	for i = 1, #names do
 		local name = names[i]
 
-        if plugs[name] then
-		    insert(result, plugs[name])
-        else
-            vim.notify("Not found package: " .. name, vim.log.levels.WARN)
-        end
+		if plugins[name] then
+			insert(result, plugins[name])
+		else
+			vim.notify("Not found package: " .. name, vim.log.levels.WARN)
+		end
 	end
 
 	return result
 end
 
 --- Get plugin list
---- @return Pack.Spec[]
+--- @return Pack.Plugin[]
 function pack.list()
-	return utils.lua.hashmap(plugs)
+	return utils.lua.hashmap(plugins)
 end
 
---- Update packages
---- @param names string[] target package names
+--- Update plugins
+--- @param names string[] target plugin names
 function pack.update(names)
-	local plugins = pack.get(names)
-
-    pack.del(names)
-
-    for i = 1, #names do
-		pack.add(plugins[i])
-	end
+	pack.del(names)
+    pack.add(pack.get(names))
 end
 
---- Unload plugins
---- @param names string[] target plugins name
+--- Reload plugins
+--- @param names string[] target plugin name
 function pack.reload(names)
 	local specs = pack.get(names)
 
-    for i = 1, #names do
-	    utils.runtime.reload(specs[i].path)
-    end
+	for i = 1, #names do
+		utils.packages.unload(specs[i].path)
+	end
+
+    pack.add(specs)
+
+	utils.vimenter()
 end
 
 return pack

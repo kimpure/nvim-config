@@ -22,6 +22,10 @@ function utils.exists(feat)
 	return fn.exists(feat) ~= 0
 end
 
+function utils.vimenter()
+    vim.cmd("doautocmd VimEnter")
+end
+
 local is_windows = utils.has("win32") or utils.has("win64")
 
 --- @class Utils.FileSystem
@@ -175,8 +179,14 @@ function runtime.append(directory)
 	vim.loader.enable()
 end
 
+--- @class Utils.Runtime
+utils.runtime = runtime
+
+--- @class Utils.Packages
+local packages = {}
+
 --- Unload directory
-function runtime.unload(directory)
+function packages.unload(directory)
 	directory = fn.expand(directory)
 
 	--- @type string[]
@@ -188,7 +198,7 @@ function runtime.unload(directory)
 		local lua_root = module_path:match("^lua/") or module_path:match("^lua\\")
 
 		if lua_root then
-            module_path = module_path:sub(5)
+			module_path = module_path:sub(5)
 
 			local filename = module_path:match("([^/\\]+)$")
 			local mod
@@ -200,54 +210,84 @@ function runtime.unload(directory)
 			end
 
 			package.loaded[mod] = nil
-        end
+		end
 	end
 end
 
---- Reload directory
+--- Load directory
 --- @param directory string The target directory
-function runtime.reload(directory)
+function packages.load(directory)
 	directory = fn.expand(directory)
 
 	--- @type string[]
 	local files = fn.glob(directory .. "/**/*.lua", false, true)
 
-    --- @type string[]
-    local plugs = {}
-
-    --- @type string[]
-    local source_files = {}
+	--- @type string[]
+	local source_files = {}
 
 	for i = 1, #files do
 		local module_path = files[i]:sub(#directory + 2)
 
 		local lua_root = module_path:match("^lua/") or module_path:match("^lua\\")
-        local meta = module_path:match("_meta")
+		local meta = module_path:match("_meta")
 
-        if lua_root and not meta then
-            module_path = module_path:sub(5)
-
-            local filename = module_path:match("([^/\\]+)$")
-            local mod
-
-            if filename == "init.lua" then
-                mod = module_path:sub(1, -10):gsub("/", "."):gsub("\\", ".")
-            else
-                mod = module_path:sub(1, -5):gsub("/", "."):gsub("\\", ".")
-            end
-
-            package.loaded[mod] = nil
-            table.insert(plugs, filename)
-            table.insert(source_files, files[i])
-        end
+		if lua_root and not meta then
+			module_path = module_path:sub(5)
+			table.insert(source_files, files[i])
+		end
 	end
 
-    for i=1, #plugs do
-        vim.cmd("source " .. source_files[i])
-    end
+	for i = 1, #source_files do
+		vim.cmd("source " .. source_files[i])
+	end
 end
 
---- @class Utils.Runtime
-utils.runtime = runtime
+--- Reload directory
+--- @param directory string The target directory
+function packages.reload(directory)
+	directory = fn.expand(directory)
+
+	--- @type string[]
+	local files = fn.glob(directory .. "/**/*.lua", false, true)
+
+	--- @type string[]
+	local plugs = {}
+
+	--- @type string[]
+	local source_files = {}
+
+	for i = 1, #files do
+		local module_path = files[i]:sub(#directory + 2)
+
+		local lua_root = module_path:match("^lua/") or module_path:match("^lua\\")
+		local meta = module_path:match("_meta")
+
+		if lua_root and not meta then
+			module_path = module_path:sub(5)
+
+			local filename = module_path:match("([^/\\]+)$")
+			local mod
+
+			if filename == "init.lua" then
+				mod = module_path:sub(1, -10):gsub("/", "."):gsub("\\", ".")
+			else
+				mod = module_path:sub(1, -5):gsub("/", "."):gsub("\\", ".")
+			end
+
+			package.loaded[mod] = nil
+			table.insert(plugs, filename)
+			table.insert(source_files, files[i])
+		end
+	end
+
+    utils.vimenter()
+
+	for i = 1, #plugs do
+		vim.cmd("source " .. source_files[i])
+	end
+end
+
+--- @class Utils.Packages
+utils.packages = packages
 
 return utils
