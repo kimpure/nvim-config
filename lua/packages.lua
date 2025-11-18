@@ -179,6 +179,7 @@ pack.add({
 			require("mason-lspconfig").setup({
 				ensure_installed = vim.lsp.servers,
 				automatic_installation = true,
+                handlers = {}
 			})
 
 			vim.lsp.config("*", {
