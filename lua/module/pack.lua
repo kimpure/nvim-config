@@ -139,7 +139,7 @@ function pack.add(specs)
 					end, module_name, boot)
 
 					if not success then
-                        --- @diagnostic disable-next-line
+						--- @diagnostic disable-next-line
 						vim.notify(message, vim.log.levels.ERROR)
 					end
 
@@ -186,9 +186,9 @@ function pack.add(specs)
 					utils.runtime.append(dir)
 
 					plugins[name] = vim.tbl_extend("force", spec, {
-                        path = dir,
-                        name = name,
-                    })
+						path = dir,
+						name = name,
+					})
 
 					load_plugin()
 				end
@@ -200,7 +200,7 @@ function pack.add(specs)
 				if import_plugin() then
 					plugins[name] = clone_package(spec)
 
-                    load_plugin()
+					load_plugin()
 				else
 					vim.notify("Faild import plugin: " .. name, vim.log.levels.WARN)
 				end
@@ -261,7 +261,7 @@ end
 --- @param names string[] target plugin names
 function pack.update(names)
 	pack.del(names)
-    pack.add(pack.get(names))
+	pack.add(pack.get(names))
 end
 
 --- Reload plugins
@@ -273,7 +273,7 @@ function pack.reload(names)
 		utils.packages.unload(specs[i].path)
 	end
 
-    pack.add(specs)
+	pack.add(specs)
 
 	utils.vimenter()
 end

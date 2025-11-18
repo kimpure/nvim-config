@@ -23,7 +23,7 @@ function utils.exists(feat)
 end
 
 function utils.vimenter()
-    vim.cmd("doautocmd VimEnter")
+	vim.cmd("doautocmd VimEnter")
 end
 
 local is_windows = utils.has("win32") or utils.has("win64")

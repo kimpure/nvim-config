@@ -13,7 +13,7 @@ return {
 			workspace = {
 				checkThirdParty = false,
 			},
-            flags = {
+			flags = {
 				debounce_text_changes = 0,
 			},
 		},

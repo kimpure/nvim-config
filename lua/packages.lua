@@ -1,5 +1,5 @@
 pack.add({
-    {
+	{
 		src = "github.com/folke/lazydev.nvim",
 		boot = {
 			"lazydev",
@@ -496,9 +496,9 @@ pack.add({
 		end,
 	},
 
-    {
-        dir = "~/dev/light-tree.nvim",
-    },
+	{
+		dir = "~/dev/light-tree.nvim",
+	},
 
 	{
 		src = "github.com/hedyhli/outline.nvim",

@@ -65,7 +65,7 @@ create_autocmd("LspAttach", {
 
 create_autocmd("VimEnter", {
 	callback = function()
-        local lsp_servers = vim.lsp.servers
+		local lsp_servers = vim.lsp.servers
 		for i = 1, #lsp_servers do
 			vim.lsp.enable(lsp_servers[i])
 		end
