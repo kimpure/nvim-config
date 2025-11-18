@@ -92,7 +92,8 @@ end
 --- @field opts? any
 
 --- @type table<string, Pack.Plugin>
-local plugins = {}
+vim.plugins = {}
+local plugins = vim.plugins
 
 --- @type table<string, integer>[]
 local event_autocmds = {}
