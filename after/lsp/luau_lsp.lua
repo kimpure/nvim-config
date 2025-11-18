@@ -4,26 +4,21 @@ local function rojo_project()
 	end)
 end
 
+local project_file = rojo_project() or "default.project.json"
+
 return {
-	cmd = { "luau-lsp" },
+	cmd = { "luau-lsp", "lsp" },
 	filetypes = { "luau" },
 	settings = {
 		["luau-lsp"] = {
-			platform = {
-				type = "roblox",
-			},
-			types = {
-				roblox_security_level = "PluginSecurity",
-			},
+			platform = { type = "roblox" },
+			types = { roblox_security_level = "PluginSecurity" },
 		},
 		sourcemap = {
-			enabled = rojo_project(),
-			autogenerate = true, -- automatic generation when the server is initialized
-			rojo_project_file = "default.project.json",
+			enabled = project_file ~= nil,
+			autogenerate = true,
+			rojo_project_file = project_file,
 			sourcemap_file = "sourcemap.json",
 		},
 	},
-	on_init = function(client)
-		client.server_capabilities.diagnosticProvider = nil
-	end,
 }
