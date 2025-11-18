@@ -614,7 +614,7 @@ pack.add({
 		},
 	},
 
-	-- { src = "github.com/samjwill/nvim-unception" },
+	{ src = "github.com/samjwill/nvim-unception" },
 
 	{
 		src = "github.com/lewis6991/satellite.nvim",
