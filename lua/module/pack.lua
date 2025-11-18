@@ -20,7 +20,6 @@ local function clone_package(spec)
 	local version = spec.version
 
 	src = sub(src, 6) == "https:" and src or "https://" .. src
-	name = name or match(src, "^.+/(.+)$")
 
 	local path = opt_path .. name
 
@@ -103,11 +102,13 @@ local event_autocmds = {}
 function pack.add(specs)
 	for i = 1, #specs do
 		local spec = specs[i]
-		local name = match(spec.src or spec.dir or "unknown", "^.+/(.+)$")
+		local name = spec.name or match(spec.src or spec.dir, "^.+/(.+)$")
 		local import = spec.import
 		local boot = spec.boot
 		local events = spec.events
 		local keymaps = spec.keymaps
+
+		spec.name = name
 
 		--- @return boolean
 		local function import_plugin()
@@ -197,8 +198,9 @@ function pack.add(specs)
 			end
 		elseif spec.src then
 			if not spec.disable then
+                spec = clone_package(spec)
 				if import_plugin() then
-					plugins[name] = clone_package(spec)
+					plugins[name] = spec
 
 					load_plugin()
 				else
