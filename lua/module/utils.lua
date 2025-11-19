@@ -186,6 +186,7 @@ utils.runtime = runtime
 local packages = {}
 
 --- Unload directory
+--- @param directory string Target directory path
 function packages.unload(directory)
 	directory = fn.expand(directory)
 
