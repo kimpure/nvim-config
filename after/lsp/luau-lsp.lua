@@ -5,7 +5,6 @@ local function rojo_project()
 end
 
 return {
-	cmd = { "luau-lsp", "lsp" },
 	filetypes = { "luau" },
 	settings = {
 		["luau-lsp"] = {
@@ -15,16 +14,20 @@ return {
 			types = {
 				roblox_security_level = "PluginSecurity",
 			},
-		},
-		sourcemap = {
-			enabled = rojo_project(),
-			autogenerate = true, -- automatic generation when the server is initialized
-			rojo_project_file = "default.project.json",
-			sourcemap_file = "sourcemap.json",
+			completion = {
+				imports = {
+					enabled = true, -- enable auto imports
+				},
+			},
+			sourcemap = {
+				enabled = rojo_project(),
+				autogenerate = true, -- automatic generation when the server is initialized
+				rojo_project_file = "default.project.json",
+				sourcemap_file = "sourcemap.json",
+			},
 		},
 	},
 	on_init = function(client)
 		client.server_capabilities.diagnosticProvider = nil
 	end,
 }
-

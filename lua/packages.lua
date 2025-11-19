@@ -154,7 +154,7 @@ pack.add({
 		end,
 	},
 
-	-- { src = "github.com/lopi-py/luau-lsp.nvim" },
+	{ src = "github.com/lopi-py/luau-lsp.nvim" },
 	{ src = "github.com/mason-org/mason-lspconfig.nvim" },
 	{
 		src = "github.com/mason-org/mason.nvim",
@@ -168,20 +168,20 @@ pack.add({
 			local lsp_servers = {
 				"clangd",
 				"lua_ls",
-				"luau_lsp",
-                "gopls",
+				"gopls",
 				"vimls",
 			}
 
 			vim.lsp.servers = lsp_servers
 		end,
 		boot = function()
-            local servers = vim.lsp.servers
+			local servers = vim.lsp.servers
 
 			require("mason-lspconfig").setup({
 				ensure_installed = servers,
 				automatic_installation = true,
-                handlers = {}
+				automatic_enable = false,
+				handlers = {},
 			})
 
 			vim.lsp.config("*", {
@@ -190,6 +190,8 @@ pack.add({
 					debounce_text_changes = 200,
 				},
 			})
+
+			vim.lsp.enable(servers)
 		end,
 	},
 
