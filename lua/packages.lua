@@ -154,13 +154,15 @@ pack.add({
 		end,
 	},
 
+	{
+		src = "github.com/VidocqH/lsp-lens.nvim",
+		boot = { "lsp-lens" },
+	},
 	{ src = "github.com/lopi-py/luau-lsp.nvim" },
 	{ src = "github.com/mason-org/mason-lspconfig.nvim" },
 	{
 		src = "github.com/mason-org/mason.nvim",
-		boot = {
-			"mason",
-		},
+		boot = { "mason" },
 	},
 	{
 		src = "github.com/neovim/nvim-lspconfig",
