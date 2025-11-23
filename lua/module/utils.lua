@@ -104,6 +104,23 @@ function lua.table_select(index, tab)
 	return res
 end
 
+--- @vararg any[]
+--- @return any[]
+function lua.table_add(...)
+	local res = {}
+    local len = 0
+    local pack = { ... }
+
+    for i=1, #pack do
+        for j=1, #pack[i] do
+            len = len + 1
+            res[len] = pack[i][j]
+        end
+    end
+
+	return res
+end
+
 --- @param tab table<any, any> target table
 --- @return number
 function lua.mixedtable_len(tab)

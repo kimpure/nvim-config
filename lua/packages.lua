@@ -159,6 +159,24 @@ pack.add({
 		boot = { "lsp-lens" },
 	},
 	{ src = "github.com/lopi-py/luau-lsp.nvim" },
+	{
+		src = "github.com/Saecki/crates.nvim",
+		events = { "BufRead" },
+		boot = {
+			"crates",
+			completion = {
+				crates = {
+					enabled = true,
+				},
+			},
+			lsp = {
+				enabled = true,
+				actions = true,
+				completion = true,
+				hover = true,
+			},
+		},
+	},
 	{ src = "github.com/mason-org/mason-lspconfig.nvim" },
 	{
 		src = "github.com/mason-org/mason.nvim",
@@ -167,16 +185,15 @@ pack.add({
 	{
 		src = "github.com/neovim/nvim-lspconfig",
 		import = function()
-			local lsp_servers = {
+			local servers = {
 				"clangd",
 				"lua_ls",
 				"gopls",
 				"vimls",
-
-                "jsonls",
+				"jsonls",
 			}
 
-			vim.lsp.servers = lsp_servers
+			vim.lsp.servers = servers
 		end,
 		boot = function()
 			local servers = vim.lsp.servers
@@ -505,9 +522,15 @@ pack.add({
 		end,
 	},
 
-	-- {
-	-- 	dir = "~/dev/light-tree.nvim",
-	-- },
+	{
+		src = "github.com/nvim-lualine/lualine.nvim",
+		boot = {
+			"lualine",
+			sections = {
+				lualine_c = { "lsp_progress" },
+			},
+		},
+	},
 
 	{
 		src = "github.com/hedyhli/outline.nvim",
