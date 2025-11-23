@@ -32,7 +32,7 @@ local function clone_package(spec)
 		end
 
 		insert(cmd, src)
-		insert(cmd, path)
+		insert(cmd, fn.expand(path))
 
 		local sys = fn.system(cmd)
 

@@ -699,4 +699,11 @@ pack.add({
 		src = "github.com/navarasu/onedark.nvim",
 		boot = "colorscheme onedark",
 	},
+
+    {
+        src = "github.com/chipsenkbeil/distant.nvim",
+        boot = {
+            "distant",
+        }
+    }
 })
