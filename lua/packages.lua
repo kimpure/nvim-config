@@ -193,7 +193,6 @@ pack.add({
 		end,
 		boot = function()
 			local servers = vim.lsp.servers
-
 			require("mason-lspconfig").setup({
 				ensure_installed = servers,
 				automatic_installation = true,

@@ -11,7 +11,7 @@ create_autocmd("LspAttach", {
 
 		if client.server_capabilities.inlayHintProvider then
 			vim.lsp.inlay_hint.enable(true)
-		end
+        end
 
 		local bufnr = event_context.buf
 
