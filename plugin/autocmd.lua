@@ -9,7 +9,7 @@ create_autocmd("LspAttach", {
 			return
 		end
 
-		if client.server_capabilities.inlayHintProvider then
+		if client.server_capabilities.inlayHintProvider and not vim.lsp.inlay_hint.is_enabled() then
 			vim.lsp.inlay_hint.enable(true)
         end
 

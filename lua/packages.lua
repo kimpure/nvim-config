@@ -134,6 +134,18 @@ pack.add({
 						},
 					}),
 				},
+				sorting = {
+					priority_weight = 1000,
+					comparators = {
+						cmp.config.compare.score,
+						cmp.config.compare.offset,
+						cmp.config.compare.exact,
+						cmp.config.compare.kind,
+						cmp.config.compare.sort_text,
+						cmp.config.compare.length,
+						cmp.config.compare.order,
+					},
+				},
 			})
 
 			cmp.setup.cmdline("/", {
@@ -188,7 +200,6 @@ pack.add({
 				"vimls",
 				"jsonls",
 			}
-
 			vim.lsp.servers = servers
 		end,
 		boot = function()
@@ -207,7 +218,7 @@ pack.add({
 				},
 			})
 
-            vim.lsp.enable(servers)
+			vim.lsp.enable(servers)
 		end,
 	},
 
@@ -704,11 +715,11 @@ pack.add({
 			"hardtime",
 			max_count = math.huge,
 			disabled_keys = {
-                ["<Up>"] = false,
-                ["<Down>"] = false,
-                ["<Left>"] = false,
-                ["<Right>"] = false,
-            },
+				["<Up>"] = false,
+				["<Down>"] = false,
+				["<Left>"] = false,
+				["<Right>"] = false,
+			},
 		},
 	},
 })
