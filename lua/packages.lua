@@ -204,6 +204,7 @@ pack.add({
 		end,
 		boot = function()
 			local servers = vim.lsp.servers
+
 			require("mason-lspconfig").setup({
 				ensure_installed = servers,
 				automatic_installation = true,
@@ -710,7 +711,7 @@ pack.add({
 	},
 
 	{
-		src = "https://github.com/m4xshen/hardtime.nvim",
+		src = "github.com/m4xshen/hardtime.nvim",
 		boot = {
 			"hardtime",
 			max_count = math.huge,
