@@ -1,3 +1,3 @@
 return {
-	filetypes = { "vim" },
+    filetypes = { "vim" },
 }
