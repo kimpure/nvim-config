@@ -35,6 +35,14 @@ end, {
     end,
 })
 
+create_user_command("GetLspPackages", function()
+    for k, _ in pairs(package.loaded) do
+        if k:match("lsp") then
+            print(k)
+        end
+    end
+end, {})
+
 create_user_command("InlayHint", function(opts)
     local fargs = opts.fargs
     local command = fargs[1]

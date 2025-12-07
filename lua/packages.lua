@@ -1,16 +1,4 @@
 pack.add({
-    {
-        src = "github.com/folke/lazydev.nvim",
-        boot = {
-            "lazydev",
-            library = {
-                {
-                    path = "${3rd}/luv/library",
-                    words = { "vim%.uv" },
-                },
-            },
-        },
-    },
     { src = "github.com/onsails/lspkind.nvim" },
     { src = "github.com/hrsh7th/cmp-nvim-lsp" },
     { src = "github.com/hrsh7th/cmp-cmdline" },
@@ -167,24 +155,6 @@ pack.add({
     },
 
     { src = "github.com/lopi-py/luau-lsp.nvim" },
-    {
-        src = "github.com/Saecki/crates.nvim",
-        events = { "BufRead" },
-        boot = {
-            "crates",
-            completion = {
-                crates = {
-                    enabled = true,
-                },
-            },
-            lsp = {
-                enabled = true,
-                actions = true,
-                completion = true,
-                hover = true,
-            },
-        },
-    },
     { src = "github.com/mason-org/mason-lspconfig.nvim" },
     {
         src = "github.com/mason-org/mason.nvim",
@@ -221,6 +191,19 @@ pack.add({
 
             vim.lsp.enable(servers)
         end,
+    },
+
+    {
+        src = "github.com/folke/lazydev.nvim",
+        boot = {
+            "lazydev",
+            library = {
+                {
+                    path = "${3rd}/luv/library",
+                    words = { "vim%.uv" },
+                },
+            },
+        },
     },
 
     {

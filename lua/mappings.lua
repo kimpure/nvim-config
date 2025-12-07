@@ -1,5 +1,6 @@
 local keymap = vim.keymap
 
+keymap.set("n", "d", '"_d', { noremap = true })
 keymap.set("n", "dd", '"_dd', { noremap = true })
 keymap.set("v", "D", '"_D', { noremap = true })
 
