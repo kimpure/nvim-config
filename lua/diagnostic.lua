@@ -24,9 +24,9 @@ diagnostic.config({
     virtual_text = true,
     virtual_lines = { only_current_line = true },
     underline = true,
-    update_in_insert = true,
     severity_sort = true,
     severity = { min = diagnostic.severity.WARN },
+    update_in_insert = true,
     signs = {
         text = {
             [diagnostic.severity.ERROR] = "E",

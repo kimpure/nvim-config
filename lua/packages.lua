@@ -285,4 +285,35 @@ pack.add({
         src = "github.com/navarasu/onedark.nvim",
         boot = "colorscheme onedark",
     },
+
+    {
+        src = "https://github.com/dmtrKovalenko/fff.nvim",
+        import = function()
+            local download = require("fff.download")
+
+            if vim.fn.filereadable(download.get_binary_path()) ~= 1 then
+               download.download_or_build_binary()
+            end
+        end,
+        boot = {
+            "fff",
+            hl = {
+                border = "none",
+            },
+        },
+        keymaps = {
+            ['ff'] = {
+                mode = "n",
+                cmd = "<CMD>FFFFind<CR>",
+            },
+        }
+    },
+
+    {
+        -- dir = "~/dev/savepage.nvim",
+        src = "github.com/kimpure/savepage.nvim",
+        boot = {
+            "savepage",
+        }
+    }
 })

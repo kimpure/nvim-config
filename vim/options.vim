@@ -54,7 +54,6 @@ endif
 
 if exists("g:neovide")
     set guifont=KawaiiMono
-    set mouse=a
     set termguicolors
     set mousemodel=extend
     
