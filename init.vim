@@ -85,6 +85,25 @@ vnoremap <silent> > >gv
 
 tnoremap <silent> <ESC> <C-\><C-n>
 
+if has("win32") || has("win64")
+    set shell=C:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe
+    set shellcmdflag=-NoLogo\ -NoProfile\ -ExecutionPolicy\ RemoteSigned\ -Command
+    set shellquote=
+    set shellxquote=
+
+    set wildignore+=.git\*,.hg\*,.svn\*
+else
+    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
+endif
+
+if exists("g:neovide")
+    set guifont=KawaiiMono
+    set termguicolors
+    set mousemodel=extend
+    
+    autocmd VimEnter * execute 'cd ' . fnameescape(stdpath('config'))
+endif
+
 " Load Neovim Plugins
 call defines#load()
 call packages#load()

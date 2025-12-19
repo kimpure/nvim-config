@@ -1,5 +1,8 @@
 local plugin = packages.plugin
 
+-- Plenary
+plugin.install("nvim-lua/plenary.nvim")
+
 -- FileTree
 plugin.install("2KAbhishek/nerdy.nvim")
 plugin.install("DaikyXendo/nvim-material-icon")
@@ -171,6 +174,7 @@ cmp.setup.cmdline(":", {
 plugin.install("neovim/nvim-lspconfig")
 plugin.install("mason-org/mason.nvim")
 plugin.install("mason-org/mason-registry")
+plugin.install("lopi-py/luau-lsp.nvim")
 
 require("mason").setup()
 local registry = require("mason-registry")
