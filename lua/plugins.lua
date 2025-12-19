@@ -39,12 +39,12 @@ vim.keymap.set("n", "<space>e", require("nvim-tree.api").tree.toggle, {
 })
 
 -- Cmp
+local cmp = plugin.install("hrsh7th/nvim-cmp")("cmp")
+
 plugin.install("hrsh7th/cmp-cmdline")("cmp_cmdline")
 plugin.install("hrsh7th/cmp-path")("cmp_path")
 plugin.install("hrsh7th/cmp-buffer")("cmp_buffer")
 plugin.install("hrsh7th/cmp-nvim-lsp")("cmp_nvim_lsp")
-
-local cmp = plugin.install("hrsh7th/nvim-cmp")("cmp")
 
 local icons = {
 	Text = "",
