@@ -6,7 +6,11 @@ plugin.install("nvim-lua/plenary.nvim")
 -- FileTree
 plugin.install("2KAbhishek/nerdy.nvim")
 plugin.install("DaikyXendo/nvim-material-icon")
-plugin.install("nvim-tree/nvim-tree.lua")("nvim-tree").setup({
+
+local nvim_tree = plugin.install("nvim-tree/nvim-tree.lua")("nvim-tree")
+local nvim_tree_api = require("nvim-tree.api")
+
+nvim_tree.setup({
 	renderer = {
 		special_files = {},
 		highlight_git = true,
@@ -31,11 +35,52 @@ plugin.install("nvim-tree/nvim-tree.lua")("nvim-tree").setup({
 			error = "E",
 		},
 	},
+	git = {
+		ignore = false,
+	},
+	filters = {
+		custom = { "^\\.git$" },
+	},
 	log = {
 		enable = false,
 		truncate = false,
 	},
+	on_attach = function(bufnr)
+		nvim_tree_api.config.mappings.default_on_attach(bufnr)
+		vim.keymap.set("n", "d", function()
+			--- @type nvim_tree.api.Node
+			local node = nvim_tree_api.tree.get_node_under_cursor()
+
+			if not node or not node.absolute_path then
+				return
+			end
+
+			local confirm = vim.fn.input("Remove " .. node.name .. "? y/N: ")
+
+			if string.lower(confirm) ~= "y" then
+				return
+			end
+
+			vim.fn.delete(node.absolute_path, "rf")
+
+			local bufs = vim.api.nvim_list_bufs()
+			for _, buf in ipairs(bufs) do
+				if vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_name(buf) == node.name then
+					vim.api.nvim_buf_delete(buf, { force = true })
+				end
+			end
+
+			nvim_tree_api.tree.reload()
+		end, {
+			desc = "nvim-tree: Delete",
+			buffer = bufnr,
+			noremap = true,
+			silent = true,
+			nowait = true,
+		})
+	end,
 })
+
 vim.keymap.set("n", "<space>e", require("nvim-tree.api").tree.toggle, {
 	silent = true,
 	desc = "Toggle nvim-tree",
@@ -43,11 +88,18 @@ vim.keymap.set("n", "<space>e", require("nvim-tree.api").tree.toggle, {
 
 -- Cmp
 local cmp = plugin.install("hrsh7th/nvim-cmp")("cmp")
-
 plugin.install("hrsh7th/cmp-cmdline")("cmp_cmdline")
 plugin.install("hrsh7th/cmp-path")("cmp_path")
 plugin.install("hrsh7th/cmp-buffer")("cmp_buffer")
 plugin.install("hrsh7th/cmp-nvim-lsp")("cmp_nvim_lsp")
+plugin.install("folke/lazydev.nvim")("lazydev").setup({
+	library = {
+		{
+			path = "${3rd}/luv/library",
+			words = { "vim%.uv" },
+		},
+	},
+})
 
 local icons = {
 	Text = "",
@@ -139,6 +191,7 @@ cmp.setup({
 		{ name = "nvim_lsp" },
 		{ name = "path" },
 		{ name = "buffer", keyword_length = 2 },
+		{ name = "lazydev", group_index = 0 },
 	},
 	sorting = {
 		priority_weight = 1000,
@@ -153,6 +206,7 @@ cmp.setup({
 		},
 	},
 })
+
 cmp.setup.cmdline("/", {
 	mapping = cmp.mapping.preset.cmdline(),
 	sources = {
@@ -167,39 +221,45 @@ cmp.setup.cmdline(":", {
 	}, {
 		{ name = "cmdline" },
 	}),
-    matching = { disallow_symbol_nonprefix_matching = false },
+	matching = { disallow_symbol_nonprefix_matching = false },
+})
+
+cmp.setup.filetype("luau", {
+	sources = {
+		{ name = "nvim_lsp" },
+		{ name = "buffer", keyword_length = 2 },
+	},
 })
 
 -- Lsp
-plugin.install("neovim/nvim-lspconfig")
-plugin.install("mason-org/mason.nvim")
-plugin.install("mason-org/mason-registry")
 plugin.install("lopi-py/luau-lsp.nvim")
+plugin.install("neovim/nvim-lspconfig")
+plugin.install("mason-org/mason.nvim")("mason").setup()
+plugin.install("mason-org/mason-registry")
 
-require("mason").setup()
 local registry = require("mason-registry")
 
 for i = 1, #vim.lsp.servers do
-	local success, pkg = pcall(registry.get_package, vim.lsp.servers[i])
+	local pkg = registry.has_package(vim.lsp.servers[i])
 
-	if success and not pkg:is_installed() then
-		pkg:install()
+	if pkg and not registry.is_installed(vim.lsp.servers[i]) then
+		vim.cmd("MasonInstall " .. vim.lsp.servers[i])
 	end
 end
 
 for i = 1, #vim.lsp.formatters do
-	local success, pkg = pcall(registry.get_package, vim.lsp.formatters[i])
+    local pkg = registry.has_package(vim.lsp.formatters[i])
 
-	if success and not pkg:is_installed() then
-		pkg:install()
+	if pkg and not registry.is_installed(vim.lsp.formatters[i]) then
+		vim.cmd("MasonInstall " .. vim.lsp.formatters[i])
 	end
 end
 
 for i = 1, #vim.lsp.linters do
-	local success, pkg = pcall(registry.get_package, vim.lsp.linters[i])
+    local pkg = registry.has_package(vim.lsp.linters[i])
 
-	if success and not pkg:is_installed() then
-		pkg:install()
+	if pkg and not registry.is_installed(vim.lsp.linters[i]) then
+		vim.cmd("MasonInstall " .. vim.lsp.linters[i])
 	end
 end
 
@@ -257,6 +317,26 @@ vim.lsp.config("*", {
 
 vim.lsp.enable(vim.lsp.servers)
 
+--- Git
+plugin.install("lewis6991/gitsigns.nvim")("gitsigns").setup({
+	signs = {
+		add = { text = "┃" },
+		change = { text = "┃" },
+		delete = { text = "┃" },
+		topdelete = { text = "┃" },
+		changedelete = { text = "┃" },
+		untracked = { text = "┆" },
+	},
+	signs_staged = {
+		add = { text = "┃" },
+		change = { text = "┃" },
+		delete = { text = "┃" },
+		topdelete = { text = "┃" },
+		changedelete = { text = "┃" },
+		untracked = { text = "┆" },
+	},
+})
+
 -- Terminal
 plugin.install("willothy/flatten.nvim")("flatten").setup()
 
@@ -264,11 +344,15 @@ plugin.install("willothy/flatten.nvim")("flatten").setup()
 plugin.install("lukas-reineke/indent-blankline.nvim")("ibl").setup()
 
 -- Scroll
-plugin.install("lewis6991/satellite.nvim")("satellite").setup({
+plugin.update("lewis6991/satellite.nvim")("satellite").setup({
 	current_only = false,
 	winblend = 0,
 	handlers = {
+		marks = {
+			enable = false,
+		},
 		gitsigns = {
+			enable = true,
 			signs = {
 				add = "│",
 				change = "│",
@@ -280,6 +364,5 @@ plugin.install("lewis6991/satellite.nvim")("satellite").setup({
 
 -- ColorScheme
 plugin.install("navarasu/onedark.nvim")("onedark").setup({
-    style = "darker",
+	style = "darker",
 })
-
