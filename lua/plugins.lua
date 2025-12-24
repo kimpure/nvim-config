@@ -317,6 +317,23 @@ vim.lsp.config("*", {
 
 vim.lsp.enable(vim.lsp.servers)
 
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+
+        if not client then
+            return
+        end
+
+
+        require("cmp").setup.buffer({
+            sources = {
+                { name = "nvim_lsp" },
+            },
+        })
+    end,
+})
+
 --- Git
 plugin.install("lewis6991/gitsigns.nvim")("gitsigns").setup({
 	signs = {
@@ -363,6 +380,6 @@ plugin.update("lewis6991/satellite.nvim")("satellite").setup({
 })
 
 -- ColorScheme
-plugin.install("navarasu/onedark.nvim")("onedark").setup({
-	style = "darker",
-})
+plugin.install("rktjmp/lush.nvim")
+plugin.install("kimpure/sakura.nvim")
+

@@ -62,6 +62,9 @@ set clipboard=unnamed,unnamedplus
 set shortmess+=c
 set shortmess+=I
 
+set undofile
+execute 'set undodir=' .. luaeval("vim.fn.stdpath('state') .. '/undo'")
+
 " Mappings
 nnoremap <silent> <A-Right> :wincmd l<CR>
 nnoremap <silent> <A-Left> :wincmd h<CR>
@@ -80,6 +83,13 @@ nnoremap <silent> <C-Left> b
 nnoremap <silent> <S-Up> <C-u>
 nnoremap <silent> <S-Down> <C-d>
 
+inoremap <silent> , ,<C-g>u
+inoremap <silent> . .<C-g>u
+inoremap <silent> ! !<C-g>u
+inoremap <silent> ? ?<C-g>u
+inoremap <silent> <CR> <CR><C-g>u
+inoremap <silent> <space> <space><C-g>u
+
 vnoremap <silent> < <gv
 vnoremap <silent> > >gv
 
@@ -97,10 +107,8 @@ else
 endif
 
 if exists("g:neovide")
-    set guifont=KawaiiMono
-    set termguicolors
-    set mousemodel=extend
-    
+    call neovide#load()
+
     autocmd VimEnter * execute 'cd ' . fnameescape(stdpath('config'))
 endif
 
@@ -109,5 +117,5 @@ call defines#load()
 call packages#load()
 call plugins#load()
 
-colorscheme onedark
+colorscheme sakura
 

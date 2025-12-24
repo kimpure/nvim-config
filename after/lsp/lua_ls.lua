@@ -17,6 +17,14 @@ return {
 				enable = true,
 				semicolon = "Disable",
 			},
+            diagnostics = {
+                disable = {
+                    "unused-local",
+                    "unused-function",
+                    "unused-var",
+                    "unused-param",
+                },
+            },
 		},
 	},
 }
