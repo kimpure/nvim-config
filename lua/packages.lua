@@ -43,23 +43,22 @@ end
 
 --- @param name string
 function plugin.uninstall(name)
-    if vim.fn.isdirectory(plugin.directory .. name) == 1 then
-        vim.fn.delete(plugin.directory .. name, "rf")
-    end
+	if vim.fn.isdirectory(plugin.directory .. name) == 1 then
+		vim.fn.delete(plugin.directory .. name, "rf")
+	end
 end
 
 --- @param repo string
 --- @param spec? Plugin.Spec
 function plugin.update(repo, spec)
-    spec = spec or {}
+	spec = spec or {}
 	local name = string.match(repo, "^.+/(.+)$")
 	local directory = (spec.directory or plugin.directory) .. name
-    if vim.fn.isdirectory(directory) == 1 then
-        vim.fn.delete(plugin.directory .. name, "rf")
-    end
-    return plugin.install(repo, spec)
+	if vim.fn.isdirectory(directory) == 1 then
+		vim.fn.delete(plugin.directory .. name, "rf")
+	end
+	return plugin.install(repo, spec)
 end
 
 packages.plugin = plugin
 _G.packages = packages
-

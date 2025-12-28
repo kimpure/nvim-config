@@ -170,46 +170,46 @@ cmp.setup({
 		["<Down>"] = cmp.mapping(function(fallback)
 			if cmp.visible() then
 				cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-                tab_comp = true
+				tab_comp = true
 			else
 				fallback()
-                tab_comp = false
+				tab_comp = false
 			end
 		end, { "i", "s" }),
 		["<Up>"] = cmp.mapping(function(fallback)
 			if cmp.visible() then
 				cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
-                tab_comp = true
+				tab_comp = true
 			else
 				fallback()
-                tab_comp = false
+				tab_comp = false
 			end
 		end, { "i", "s" }),
 		["<Tab>"] = function(fallback)
-            if cmp.visible() then
-                if tab_comp and cmp.get_selected_entry() then
-                    cmp.confirm({ select = false })
-                    tab_comp = false
-                else
-                    cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-                end
-            else
-                fallback()
-            end
+			if cmp.visible() then
+				if tab_comp and cmp.get_selected_entry() then
+					cmp.confirm({ select = false })
+					tab_comp = false
+				else
+					cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
+				end
+			else
+				fallback()
+			end
 		end,
-        ["<S-Tab>"] = function(fallback)
-            if cmp.visible() then
-                cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
-            end
-        end,
-        ["<CR>"] = function (fallback)
-            if cmp.get_selected_entry() then
-                cmp.confirm({ select = false })
-                tab_comp = false
-            else
-                fallback()
-            end
-        end,
+		["<S-Tab>"] = function(fallback)
+			if cmp.visible() then
+				cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
+			end
+		end,
+		["<CR>"] = function(fallback)
+			if cmp.get_selected_entry() then
+				cmp.confirm({ select = false })
+				tab_comp = false
+			else
+				fallback()
+			end
+		end,
 		["<C-e>"] = cmp.mapping.abort(),
 		["<Esc>"] = cmp.mapping.close(),
 	}),
@@ -411,10 +411,10 @@ plugin.install("lewis6991/gitsigns.nvim")("gitsigns").setup({
 -- Notify
 local notify = plugin.install("rcarriga/nvim-notify")("notify")
 notify.setup({
-    timeout = 0,
-    stages = "fade",
-    minimum_width = 30,
-    top_down = false,
+	timeout = 0,
+	stages = "fade",
+	minimum_width = 30,
+	top_down = false,
 })
 vim.notify = notify
 
