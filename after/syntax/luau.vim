@@ -9,6 +9,8 @@ syntax region complex
     \ start=+{+
     \ end=+}+
     \ contained
+    \ containedin=complexString
     \ contains=ALL
+    \ keepend
 
 highlight link complexString String
