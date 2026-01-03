@@ -280,7 +280,8 @@ cmp.setup.filetype("luau", {
 })
 
 -- Syntax
-plugin.install("kimpure/blink-syntax.nvim")
+plugin.install("kimpure/blink-syntax.vim")
+plugin.install("kimpure/luau-syntax.vim")
 
 -- Lsp
 plugin.install("lopi-py/luau-lsp.nvim")
@@ -441,6 +442,22 @@ plugin.install("lewis6991/satellite.nvim")("satellite").setup({
 			},
 		},
 	},
+})
+
+-- Cmdline
+plugin.install("kimpure/cmdhistory.nvim")("cmdhistory").setup({
+    mute = {
+        "q",
+        "qa",
+        "wq",
+        "wqa",
+        "wincmd h",
+        "wincmd j",
+        "wincmd k",
+        "wincmd l",
+        "w",
+        "wa",
+    },
 })
 
 -- ColorScheme
