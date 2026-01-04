@@ -89,6 +89,7 @@ inoremap <silent> ! !<C-g>u
 inoremap <silent> ? ?<C-g>u
 inoremap <silent> <CR> <CR><C-g>u
 inoremap <silent> <space> <space><C-g>u
+inoremap <silent> <C-r> <C-g>u<C-r>
 
 vnoremap <silent> < <gv
 vnoremap <silent> > >gv

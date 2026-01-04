@@ -188,6 +188,7 @@ cmp.setup({
 		["<Tab>"] = function(fallback)
 			if cmp.visible() then
 				if tab_comp and cmp.get_selected_entry() then
+                    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-g>u", true, true, true), 'n', false)
 					cmp.confirm({ select = false })
 					tab_comp = false
 				else
@@ -204,6 +205,7 @@ cmp.setup({
 		end,
 		["<CR>"] = function(fallback)
 			if cmp.get_selected_entry() then
+                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-g>u", true, true, true), 'n', false)
 				cmp.confirm({ select = false })
 				tab_comp = false
 			else
