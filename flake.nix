@@ -13,7 +13,9 @@
         devShells.${system}.default = pkgs.mkShell {
             packages = with pkgs; [
                 neovim
+
                 lua-language-server
+                luau-lsp
             ];
         };
     };
