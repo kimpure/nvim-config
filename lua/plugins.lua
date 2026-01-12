@@ -316,65 +316,22 @@ plugin.install("kimpure/blink-syntax.vim")
 plugin.install("kimpure/luau-syntax.vim")
 
 -- Lsp
-do
-    local function break_dots_to_table(tab)
-        for k, v in pairs(tab) do
-            if type(k) == "string" then
-                local parts = {}
+local vscode_settings = plugin.install("kimpure/vscode-settings.nvim")("vscode-settings")
 
-                for part in string.gmatch(k, "[^%.]+") do
-                    table.insert(parts, part)
-                end
-
-                if #parts > 1 then
-                    local target = tab
-
-                    for i=1, #parts do
-                        target[parts[i]] = i == #parts and v or {}
-                        target = target[parts[i]]
-                    end
-
-                    tab[k] = nil
-                end
-            end
-
-            if type(v) == "table" then
-                break_dots_to_table(v)
-            end
-        end
-
-        return tab
-    end
-
-    local function get_vscode_settings()
-        local file = io.open(".vscode/settings.json", "r")
-
-        if not file then
-            return
-        end
-
-        local json = vim.json.decode(file:read("*a"))
-
-        file:close()
-
-        return break_dots_to_table(json)
-    end
-
-    plugin.install("lopi-py/luau-lsp.nvim")("luau-lsp").setup(vim.tbl_deep_extend("force", {
-        platform = {
-            type = "roblox",
-        },
-        types = {
-            roblox_security_level = "PluginSecurity",
-        },
-        sourcemap = {
-            enabled = true,
-            autogenerate = true, -- automatic generation when the server is initialized
-            rojo_project_file = "default.project.json",
-            sourcemap_file = "sourcemap.json",
-        },
-    }, (get_vscode_settings() or {})["luau-lsp"] or {}))
-end
+plugin.install("lopi-py/luau-lsp.nvim")("luau-lsp").setup(vim.tbl_deep_extend("force", {
+    platform = {
+        type = "roblox",
+    },
+    types = {
+        roblox_security_level = "PluginSecurity",
+    },
+    sourcemap = {
+        enabled = true,
+        autogenerate = true, -- automatic generation when the server is initialized
+        rojo_project_file = "default.project.json",
+        sourcemap_file = "sourcemap.json",
+    },
+}, vscode_settings.get_settings()["luau-lsp"] or {}))
 
 plugin.install("neovim/nvim-lspconfig")
 plugin.install("mason-org/mason.nvim")("mason").setup()
@@ -550,10 +507,6 @@ plugin.install("kimpure/cmdhistory.nvim")("cmdhistory").setup({
 		"wa",
 	},
 })
-
--- Copilot
-vim.g.copilot_no_tab_map = true
-plugin.install("github/copilot.vim")
 
 -- ColorScheme
 plugin.install("rktjmp/lush.nvim")
