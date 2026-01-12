@@ -335,33 +335,6 @@ plugin.install("lopi-py/luau-lsp.nvim")("luau-lsp").setup(vim.tbl_deep_extend("f
 
 plugin.install("neovim/nvim-lspconfig")
 plugin.install("mason-org/mason.nvim")("mason").setup()
-plugin.install("mason-org/mason-registry")
-
-local registry = require("mason-registry")
-
-for i = 1, #vim.lsp.servers do
-	local pkg = registry.has_package(vim.lsp.servers[i])
-
-	if pkg and not registry.is_installed(vim.lsp.servers[i]) then
-		vim.cmd("MasonInstall " .. vim.lsp.servers[i])
-	end
-end
-
-for i = 1, #vim.lsp.formatters do
-	local pkg = registry.has_package(vim.lsp.formatters[i])
-
-	if pkg and not registry.is_installed(vim.lsp.formatters[i]) then
-		vim.cmd("MasonInstall " .. vim.lsp.formatters[i])
-	end
-end
-
-for i = 1, #vim.lsp.linters do
-	local pkg = registry.has_package(vim.lsp.linters[i])
-
-	if pkg and not registry.is_installed(vim.lsp.linters[i]) then
-		vim.cmd("MasonInstall " .. vim.lsp.linters[i])
-	end
-end
 
 vim.lsp.config("*", {
 	capabilities = {
