@@ -1,6 +1,7 @@
 local registry = packages.plugin.install("mason-org/mason-registry")("mason-registry")
 local servers = {
     "lua-language-server",
+    "luau-lsp",
 }
 
 for _, server in ipairs(servers) do
