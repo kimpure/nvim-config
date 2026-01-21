@@ -12,6 +12,8 @@ plugin.directory = vim.fn.expand(vim.fn.stdpath("data") .. "/site/pack/plugins/o
 --- @param repo string
 --- @param spec? Plugin.Spec
 function plugin.install(repo, spec)
+    vim.notify("install tick: " .. os.clock() .. " | repo: " .. repo, vim.log.levels.INFO)
+
 	spec = spec or {}
 	local name = string.match(repo, "^.+/(.+)$")
 	local index = spec.index or plugin.index
